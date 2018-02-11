@@ -1,4 +1,4 @@
-"""Implement QLearner"""
+"""Implement QLearner, a Reinforcement Learning class"""
 
 import numpy as np
 import random as rand
@@ -42,10 +42,31 @@ class QLearner(object):
         self.a = 0
         
         # Initialize a Q table which records and updates Q value for
-        # each action in a state
+        # each action in each state
         self.Q = np.zeros(shape=(num_states, num_actions))
-        # Keep track of s_prime for each key (s, a)
+        # Keep track of the number of transitions from s to s_prime for when taking 
+        # an action a when doing Dyna-Q
         self.T = {}
-        # Keep track of reward for each action in each state
+        # Keep track of reward for each action in each state when doing Dyna-Q
         self.R = np.zeros(shape=(num_states, num_actions))
+
+    def query_set_state(self, s):
+        """Find the next action to take in state s. Update the latest state and action 
+        without updating the Q table. Two main uses for this method: 1) To set the  
+        initial state, and 2) when using a learned policy, but not updating it.
+
+        Parameters:
+        s: The new state
+        
+        Returns: The selected action to take in s
+        """
+        if rand.uniform(0.0, 1.0) < self.rar:
+            action = rand.randint(0, self.num_actions - 1)
+        else:
+            action = self.Q[s, :].argmax()
+        self.s = s
+        self.a = action
+        if self.verbose: 
+            print ("s =", s,"a =",action)
+        return action
 
